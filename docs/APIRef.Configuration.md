@@ -38,6 +38,9 @@ Please find the [Detox example app](/examples/demo-react-native/detox.config.js)
   // ...
   "detox": {
     // ...
+    "session": {
+      "debugSynchronization": 20000
+    },
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/example.app",
@@ -193,12 +196,12 @@ Detox can either initialize a server using a generated configuration, or can be 
 ```json
 {
   "session": {
-  "server": "ws://localhost:8099",
-  "sessionId": "YourProjectSessionId"
-}
+    "server": "ws://localhost:8099",
+    "sessionId": "YourProjectSessionId"
+  }
 ```
 
-Session can also be set per configuration:
+Session can be set also per configuration, and it can have an optional numeric `debugSynchronization` parameter (see [APIRef.DetoxCLI.md](CLI reference)):
 
 ```json
 {  
@@ -207,14 +210,13 @@ Session can also be set per configuration:
       ...
       "session": {
         "server": "ws://localhost:8099",
-        "sessionId": "YourProjectSessionId"
+        "sessionId": "YourProjectSessionId",
+        "debugSynchronization": 20000
       }
     }
   }
 }
 ```
-
-
 
 ## detox-cli
 

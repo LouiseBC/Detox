@@ -9,11 +9,13 @@ describe('composeSessionConfig', () => {
   beforeEach(() => {
     composeSessionConfig = require('./composeSessionConfig');
     errorBuilder = new DetoxConfigErrorBuilder();
+    cliConfig = {};
     detoxConfig = {};
     deviceConfig = {};
   });
 
   const compose = () => composeSessionConfig({
+    cliConfig,
     detoxConfig,
     deviceConfig,
     errorBuilder,
@@ -39,6 +41,8 @@ describe('composeSessionConfig', () => {
 
     it('should return detoxConfig.session', async () => {
       expect(await compose()).toEqual({
+        autoStart: false,
+        debugSynchronization: false,
         server: 'ws://localhost:9999',
         sessionId: 'someSessionId',
       });
@@ -54,17 +58,32 @@ describe('composeSessionConfig', () => {
       expect(compose()).rejects.toThrowError(errorBuilder.missingSessionIdProperty());
     });
 
+    test(`providing empty config without server and sesionId should not throw`, async () => {
+      delete detoxConfig.session.server;
+      delete detoxConfig.session.sessionId;
+
+      expect(await compose()).toEqual({
+        autoStart: true,
+        debugSynchronization: false,
+        server: expect.any(String),
+        sessionId: expect.any(String),
+      });
+    });
+
     describe('if deviceConfig.session is defined', function() {
       beforeEach(() => {
-        detoxConfig.session = {
-          server: 'ws://localhost:1111',
+        deviceConfig.session = {
+          autoStart: true,
+          debugSynchronization: 20000,
           sessionId: 'anotherSession',
         };
       });
 
-      it('should return deviceConfig.session instead of detoxConfig.session', async () => {
+      it('should merge deviceConfig.session into detoxConfig.session', async () => {
         expect(await compose()).toEqual({
-          server: 'ws://localhost:1111',
+          autoStart: true,
+          debugSynchronization: 20000,
+          server: 'ws://localhost:9999',
           sessionId: 'anotherSession',
         });
       });
